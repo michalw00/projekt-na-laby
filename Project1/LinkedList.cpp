@@ -1,10 +1,12 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include "LinkedList.h"
 using namespace std;
 
-    Node::Node(const string& name, const string& phoneNumber) {
+    Node::Node(const string& name, const string& surname, const string& phoneNumber) {
         this->name = name;
+        this->surname = surname;
         this->phoneNumber = phoneNumber;
         next = nullptr;
     }
@@ -13,16 +15,12 @@ using namespace std;
         head = nullptr;
     }
 
-    void LinkedList::loopNodes() {
-
-    }
-
-    void LinkedList::insertAtHead(const string& name, const string& phoneNumber) {
-        Node* newNode = new Node(name, phoneNumber);
+    void LinkedList::insertAtHead(const string& name, const string& surname, const string& phoneNumber) {
+        Node* newNode = new Node(name, surname, phoneNumber);
         newNode->next = head;
         head = newNode;
 
-        cout << "Dodano: " << newNode->name << ", " << newNode->phoneNumber << endl;
+        cout << "Dodano: " << newNode->name << " " << newNode->surname << ", " << newNode->phoneNumber << endl;
     }
 
     void LinkedList::deleteByNumber(const string& phoneNumber) {
@@ -63,36 +61,115 @@ using namespace std;
         cout << "Usunieto " << phoneNumber << " z listy." << endl;
     }
 
+    void LinkedList::deleteBySurname(const string& surname) {
+
+        // Lista jest pusta
+        if (head == nullptr) {
+            cout << "Lista jest pusta." << endl;
+            return;
+        }
+
+        if (head->surname == surname) {
+            Node* temp = head;
+            head = head->next;
+            delete temp;
+            cout << "Usunieto " << surname << " z listy." << endl;
+            return;
+        }
+
+        // Szukanie node'a
+        Node* current = head;
+        Node* prev = nullptr;
+
+        while (current != nullptr && current->surname != surname) {
+            prev = current;
+            current = current->next;
+        }
+
+        // Nie znaleziono
+        if (current == nullptr) {
+            cout << "Nie znaleziono " << surname << " na liscie." << endl;
+            return;
+        }
+
+        // Usun node
+        prev->next = current->next;
+        delete current;
+        cout << "Usunieto " << surname << " z listy." << endl;
+    }
+
     void LinkedList::printAllNodes() {
         Node* current = head;
         int counter = 1;
 
         while (current != nullptr) {
-            cout << counter << "| imie: " << current->name << ", nr.: " << current->phoneNumber << endl;
+            cout << current->name << "," << current->surname << "," << current->phoneNumber << endl;
             current = current->next;
             counter++;
         }
-        cout << "___________________" << endl;
+        cout << "---" << endl;
     }
 
     void LinkedList::saveToFile(const string fileName) {
-        std::ofstream outFile(fileName);
+        ofstream outFile(fileName);
 
         Node* current = head;
         int counter = 1;
 
         if (outFile.is_open()) {
+            outFile << "Name,Surname,PhoneNumber" << endl;
+
             while (current != nullptr) {
-                outFile << counter << "| imie: " << current->name << ", nr.: " << current->phoneNumber << endl;
+                outFile << current->name << "," << current->surname << "," << current->phoneNumber << endl;
                 current = current->next;
                 counter++;
             }
             outFile.close();
-            cout << "___________________" << endl;
+            cout << "List saved to " << fileName << endl;
         }
         else {
-            std::cerr << "Blad: nie udalo sie otworzyc pliku";
+            cerr << "Blad: nie udalo sie otworzyc pliku.";
         }
+    }
+
+    void LinkedList::readFromFile(const string fileName) {
+        ifstream inFile(fileName);
+        
+        if (!inFile.is_open()) {
+            cerr << "Blad: nie udalo sie otworzyc " << fileName << " do odczytu." << endl;
+            return;
+        }
+
+        string line;
+        bool isHeader = true;
+
+        while (head != nullptr) { // Czyszczenie listy
+            Node* temp = head;
+            head = head->next;
+            delete temp;
+        }
+
+        while (getline(inFile, line)) {
+            if (isHeader) {
+                isHeader = false;
+                continue;
+            }
+
+            stringstream ss(line);
+            string name, surname, phoneNumber;
+
+            if (getline(ss, name, ',') &&
+                getline(ss, surname, ',') &&
+                getline(ss, phoneNumber, ',')) {
+
+                // Insert the data into the linked list
+                insertAtHead(name, surname, phoneNumber);
+            }
+
+        }
+
+        inFile.close();
+        cout << "Dane wczytane z " << fileName << endl;
     }
 
     Node* LinkedList::findByNumber(const string& phoneNumber) {
@@ -127,9 +204,26 @@ using namespace std;
         return current;
     }
 
-    Node* LinkedList::modifyName(const string& newName, Node* node) {
+    Node* LinkedList::findBySurname(const string& surname) {
+        Node* current = head;
+        Node* prev = nullptr;
+
+        while (current != nullptr && current->surname != surname) {
+            current = current->next;
+        }
+
+        if (current == nullptr) {
+            cout << "Nie znaleziono " << surname << " na liscie." << endl;
+            return 0;
+        }
+
+        return current;
+    }
+
+    Node* LinkedList::modifyName(const string& newName, const string& newSurname, Node* node) {
     
         node->name = newName;
+        node->surname = newSurname;
         return node;
     }
 

@@ -11,33 +11,36 @@ using namespace std;
 class Node {
 public:
     string name;
+    string surname;
     string phoneNumber;
     Node* next;
 
-    Node(const string&, const string&, Node*);
-
-    Node(const string &name, const string &phoneNumber);
+    Node(const string &name, const string& surname, const string &phoneNumber);
 };
 
 class LinkedList {
 public:
     LinkedList();
 
-    void loopNodes();
-
-    void insertAtHead(const string& name, const string& phoneNumber);
+    void insertAtHead(const string& name, const string& surname, const string& phoneNumber);
 
     void deleteByNumber(const string& number);
+
+    void deleteBySurname(const string& surname);
 
     void printAllNodes();
 
     void saveToFile(const string fileName);
 
+    void readFromFile(const string fileName);
+
     Node* findByNumber(const string& phoneNumber);
 
     Node* findByName(const string& name);
 
-    Node* modifyName(const string& newName, Node* node);
+    Node* findBySurname(const string& surname);
+
+    Node* modifyName(const string& newName, const string& newSurname, Node* node);
 
     Node* modifyNumber(const string& newNumber, Node* node);
 

@@ -7,7 +7,7 @@ int main() {
     LinkedList list;
 
     int option;
-    string name, phoneNumber;
+    string name, surname, phoneNumber;
     const string fileName = "lista.txt";
 
     while (true) {
@@ -16,6 +16,7 @@ int main() {
         cout << "3: Zmien \n";
         cout << "4: Wyswietl\n";
         cout << "5: Zapisz do pliku\n";
+        cout << "6: Odczytaj z pliku\n";
         cout << "0: Wyjdz\n";
         cout << "Wybierz opcje: ";
         cin >> option;
@@ -26,41 +27,47 @@ int main() {
 
         switch (option) {
             case 1: // Add
-                cout << "Podaj imie i nazwisko: ";
-                getline(cin, name);
+                cout << "Wprowadz imie: ";
+                cin >> name;
+                cout << "Wprowadz nazwisko: ";
+                cin >> surname;
                 cout << "Podaj numer telefonu: ";
-                getline(cin, phoneNumber);
-                list.insertAtHead(name, phoneNumber);
+                cin >> phoneNumber;
+                list.insertAtHead(name, surname, phoneNumber);
                 break;
             case 2: // Delete
-                cout << "Podaj numer telefonu: ";
-                getline(cin, phoneNumber);
-                list.deleteByNumber(phoneNumber);
+                cout << "Wprowadz nazwisko: ";
+                cin >> surname;
+                list.deleteBySurname(surname);
             break;
             case 3: // Modify
             {
                 Node* foundNode;
-                string numberToFind;
-                cout << "Wprowadz numer telefonu osoby ktora chcesz zmienic: ";
-                cin >> numberToFind;
-                foundNode = list.findByNumber(numberToFind);
+                string surnameToFind;
+                cout << "Wprowadz nazwisko osoby ktora chcesz zmienic: ";
+                cin >> surnameToFind;
+                foundNode = list.findBySurname(surnameToFind);
 
-                cout << "1: Zmien imie \n";
+                cout << "1: Zmien imie i nazwisko\n";
                 cout << "2: Zmien numer telefonu \n";
                 cout << "Wybierz opcje: ";
                 cin >> option;
 
                 string newName;
+                string newSurname;
+                string newNumber;
                 switch (option) {
                 case 1:
                     cout << "Wprowadz nowe imie: ";
                     cin >> newName;
-                    list.modifyName(newName, foundNode);
+                    cout << "Wprowadz nowe nazwisko: ";
+                    cin >> newSurname;
+                    list.modifyName(newName, newSurname, foundNode);
                     break;
                 case 2:
                     cout << "Wprowadz nowy numer telefonu: ";
-                    cin >> newName;
-                    list.modifyName(newName, foundNode);
+                    cin >> newNumber;
+                    list.modifyNumber(newNumber, foundNode);
                     break;
                 }
 
@@ -70,8 +77,10 @@ int main() {
                 break;
             case 5: // Save
                 list.saveToFile(fileName);
-               
                 cout << "Zapisano do lista.txt" << endl;
+                break;
+            case 6:
+                list.readFromFile(fileName);
                 break;
             case 0: // Quit
                 return 0;
